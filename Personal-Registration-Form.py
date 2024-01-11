@@ -7,6 +7,10 @@ from tkinter import messagebox
 #from PIL import Image, ImageTk
 import pymysql
 
+# (X) Set colors
+text_color = "#8732a8"
+background_color = "#edd8ed"
+
 #step 2: 
 #window size
 windows = Tk()
