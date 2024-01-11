@@ -16,17 +16,6 @@ windows.title('Personal Registration Form')
 windows.geometry('540x640+200+10')
 windows.resizable(False,False)
 
-# (4) Get data from entry fields
-firstname = StringVar()
-lastname = StringVar()
-email = StringVar()
-gender = StringVar()
-variable1=StringVar()
-username = StringVar()
-password = StringVar()
-confirmpassword = StringVar()
-country = StringVar()
-
 # (5) Create frame
 frame=Frame(windows, width=610, height=640, bg=background_color, bd=8)
 frame.place(x=0,y=0)
@@ -59,7 +48,7 @@ emailEntry.place(x=240, y=150)
 genderlbl =Label(frame, text='Select Gender:', fg=text_color, bg=background_color, font=('Calibre', 15, 'bold'))
 genderlbl.place(x=10, y=200)
 
-gender.set(0)
+gender = StringVar(value='0')
 genderRadio1=Radiobutton(frame, text='Male', variable=gender, value='Male', font='tahoma 13 bold')
 genderRadio1.place(x=240, y=200)
 
@@ -71,7 +60,7 @@ countryLabel=Label(frame, text='Select Country:', fg=text_color, bg=background_c
 countryLabel.place(x=10, y=250)
 
 countries=['Algeria', "Australia", 'Bahamas', 'Canada']
-country.set('Select Country')
+country = StringVar(value='Select Country')
 countryLabelDropdown=OptionMenu(frame, country, *countries)
 countryLabelDropdown.place(x=240, y=250)
 
@@ -118,16 +107,52 @@ passwordCheck2 = Checkbutton(frame, variable= displaypw2, onvalue=1, offvalue=0,
 passwordCheck2.place(x=430, y=400)
 
 # (6) Database
+
+# DB Initialization
+db = pymysql.connect(host='localhost', user='root', password='breadeunice')
+cur = db.cursor()
+cur.execute('CREATE DATABASE IF NOT EXISTS Personal_registration_form')
+cur.execute('USE Personal_registration_form')
+
+# Create table
+cur.execute('''
+    CREATE TABLE IF NOT EXISTS user_data (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        firstname VARCHAR(255),
+        lastname VARCHAR(255),
+        email VARCHAR(255),
+        gender VARCHAR(10),
+        country VARCHAR(50),
+        username VARCHAR(50),
+        password VARCHAR(255)
+    )
+''')
+db.commit()
+
+def insert_data(firstname, lastname, email, gender, country, username, password):
+     # Connect to MySQL server
+      db = pymysql.connect(host='localhost', user='root', password='breadeunice', database='Personal_registration_form')
+      cur = db.cursor()
+      
+      # Insert data into the table
+      cur.execute("INSERT INTO user_data (firstname, lastname, email, gender, country, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    (firstname, lastname, email, gender, country, username, password))
+
+      # Commit the changes
+      db.commit()
+
+      messagebox.showinfo('Success', 'Registration successful!')
+
 def submit():
       if firstnameEntry.get()=='':
             messagebox.showerror('Alert!', 'Please enter your First name')
       elif lastnameEntry.get()=='':
-            messagebox.showerror('Alert!', 'Please enter your Lastt name')
+            messagebox.showerror('Alert!', 'Please enter your Last name')
       elif emailEntry.get()=='':
             messagebox.showerror('Alert!', 'Please enter your email')
       elif gender.get()=='':
             messagebox.showerror('Alert!', 'Please enter your Gender')
-      elif country.get()=='':
+      elif country.get()=='Select Country':
             messagebox.showerror('Alert!', 'Please enter your country ')
       elif usernameEntry.get()=='':
            messagebox.showerror('Alert!', 'Please enter your username')
@@ -135,20 +160,30 @@ def submit():
            messagebox.showerror('Alert!', 'Please enter your password ')
       elif confirmpasswordEntry.get()=='':
            messagebox.showerror('Alert!', 'Please confrim your password ')
+      elif passwordEntry.get() != confirmpasswordEntry.get():
+           messagebox.showerror('Alert!', 'Please make sure passwords are matching')
       else:
-            db=pymysql.connect(host='localhost', user='root', password='12345678')
-            cur=db.cursor()
-            query='create database Personal_registration_form'
-            cur.execute(query)
-            query='use Personal_registration_form'
-            cur.execute(query)
+            insert_data(firstnameEntry.get(), lastnameEntry.get(), emailEntry.get(), gender.get(), country.get(), usernameEntry.get(), passwordEntry.get())
 
 submit1btn = Button(frame, text='Submit', width=15, borderwidth=5, height=2,bg='#7f7fff',fg='white', cursor='hand2', border=2,
                 font=('#57a1f8',16,'bold'), command=submit)
 submit1btn.place(x=150, y=500)
 
 # (7) Back button
-bckbtn = Button(frame, text='<<', width=15, border=2, height=2,cursor='hand2')     
+def go_back():
+    # Clear entry fields
+    firstnameEntry.delete(0, 'end')
+    lastnameEntry.delete(0, 'end')
+    emailEntry.delete(0, 'end')
+    gender.set(0)  # Reset gender selection
+    country.set('Select Country')  # Reset country selection
+    usernameEntry.delete(0, 'end')
+    passwordEntry.delete(0, 'end')
+    confirmpasswordEntry.delete(0, 'end')
+    displaypw1.set(0)  # Uncheck password display toggle
+    displaypw2.set(0)  # Uncheck confirm password display toggle
+
+bckbtn = Button(frame, text='<<', width=15, border=2, height=2,cursor='hand2', command=go_back)     
 bckbtn.place(x=0, y=550)
 
 windows.mainloop()
