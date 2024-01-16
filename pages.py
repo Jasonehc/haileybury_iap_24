@@ -49,6 +49,7 @@ class Page1(Frame):
 class RegistrationForm(Frame):
     def __init__(self, root, *args):
         Frame.__init__(self, root, *args)
+        self.root = root
 
         self.fg = '#0d4763'
         self.bg = '#bed8e6'
@@ -128,9 +129,11 @@ class RegistrationForm(Frame):
         submit1btn = Button(self, text='Submit', width=15, borderwidth=5, height=2,bg=self.bg,fg=self.fg, cursor='hand2', border=2, command=self.submit)
         submit1btn.place(x=150, y=500)
 
-        bckbtn = Button(self, text='<<', width=15, border=2, height=2,cursor='hand2', command=self.go_back)     
-        bckbtn.place(x=0, y=550)
+        bckbtn = Button(self, text='reset', width=15, border=2, height=2,cursor='hand2', command=self.go_back)     
+        bckbtn.place(x=100, y=550)
 
+        home_button = Button(self, text='return to home', width=15, border=2, height=2,cursor='hand2', command= lambda: self.root.raise_frame("HomePage"))
+        home_button.place(x=0, y=550)
     def place_checkboxes(self):
         def show1():
             if (self.displaypw1.get()==1):
