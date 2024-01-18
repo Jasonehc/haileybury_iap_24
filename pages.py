@@ -1,26 +1,29 @@
 from tkinter import *
-from tkinter import messagebox
+from tkinter import messagebox, font
+from PIL import ImageTk, Image
 import pymysql
 
 class App(Tk):
     def __init__(self):
         Tk.__init__(self)
-        self.geometry('800x800+0+0')
-        self.title('Personal Registration Form')
+        self.geometry('550x300+0+0')
+        self.title('FakeBook')
 
         self.bg_color = '#3b5997'
-
+        self.big_font = font.Font(size=30)
+        self.small_font = font.Font(size=15)
         self.page_dictionary = {}
-        self.page_dictionary["UserHomePage"] = UserHomePage(self)
-        self.page_dictionary["LookUpPage"] = LookUpPage(self)
-        self.page_dictionary["RegistrationPage"] = RegistrationPage(self)
-        self.page_dictionary["HomePage"] = HomePage(self)
-        self.page_dictionary["LogInPage"] = LogInPage(self)
+        self.page_dictionary["UserHomePage"] = (UserHomePage(self), '550x300+0+0')
+        self.page_dictionary["LookUpPage"] = (LookUpPage(self), '550x300+0+0')
+        self.page_dictionary["RegistrationPage"] = (RegistrationPage(self), '550x400+0+0')
+        self.page_dictionary["HomePage"] = (HomePage(self), '550x300+0+0')
+        self.page_dictionary["LogInPage"] = (LogInPage(self), '550x300+0+0')
 
         self.raise_frame("HomePage")
 
     def raise_frame(self, next_screen):
-        new_screen = self.page_dictionary[next_screen]
+        new_screen, new_screen_size = self.page_dictionary[next_screen]
+        self.geometry(new_screen_size)
         new_screen.tkraise()
 
 class HomePage(Frame):
@@ -29,19 +32,27 @@ class HomePage(Frame):
         self.root = root
 
         button1 = Button(self, text = "Register", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("RegistrationPage"))
-        button1.place(x=300,y=150,width=200,height=25)
+        button1.place(x=300,y=160,width=200,height=25)
 
         button2 = Button(self, text = "Log In", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("LogInPage"))
-        button2.place(x=300,y=175,width=200,height=25)
+        button2.place(x=300,y=185,width=200,height=25)
 
-        self.place(x=100,y=20,width=1000,height=900)
+        logo = Image.open('facebook_logo.png')
+        logo_img = ImageTk.PhotoImage(logo)
+
+        logo_label = Label(self, image=logo_img)
+        logo_label.image = logo_img
+        logo_label.place(x=20, y=20)
+
+        self.place(x=0,y=0,width=500,height=500)
 
 class UserHomePage(Frame):
     def __init__(self, root):
         Frame.__init__(self, root)
         self.root = root
-        title1 = Label(self, text = "User Registration Database", background = self.root.bg_color, foreground ="white")
-        title1.place(x=0,y=100,width=200,height=100)
+        
+        title1 = Label(self, text = "Fakebook", background = self.root.bg_color, foreground ="white")
+        title1.place(x=0,y=0,width=600,height=20)
 
         button1 = Button(self, text = "Register new user", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("RegistrationPage"))
         button1.place(x=300,y=150,width=200,height=25)
@@ -49,7 +60,7 @@ class UserHomePage(Frame):
         button2 = Button(self, text = "Lookup users", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("LookUpPage"))
         button2.place(x=300,y=175,width=200,height=25)
 
-        self.place(x=100,y=20,width=1000,height=900)
+        self.place(x=0,y=0,width=1000,height=900)
 
 class LookUpPage(Frame):
     def __init__(self, root):
@@ -63,7 +74,7 @@ class LookUpPage(Frame):
         button1 = Button(self, text = "Go back", background = self.bg_color, foreground ="white", command = self.return_to_home)
         button1.place(x=0,y=150,width=100,height=25)
 
-        self.place(x=100,y=20,width=1000,height=900)
+        self.place(x=0,y=0,width=1000,height=900)
 
         query_label = Label(self, width=15, text = "Enter query:", background = self.bg_color, foreground='white')
         query_label.place(x=0, y=100)
@@ -79,7 +90,7 @@ class LookUpPage(Frame):
 
     def return_to_home(self):
         self.query_results.config(text = "")
-        self.root.raise_frame("HomePage")
+        self.root.raise_frame("UserHomePage")
 
     def run_query(self):
         db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
@@ -102,25 +113,29 @@ class LogInPage(Frame):
         self.root = root
         self.fg = 'white'
         self.bg = root.bg_color
+
+        title1 = Label(self, text = "Fakebook", background = self.root.bg_color, foreground ="white")
+        title1.place(x=0,y=0,width=600,height=20)
+
         username_label = Label(self, text="Username:", fg=self.fg, bg=self.bg, width = 20)
-        username_label.place(x=0, y=80)
+        username_label.place(x=20, y=60)
 
         self.username_entry=Entry(self, width=30, borderwidth=2)
-        self.username_entry.place(x=240, y=80)
+        self.username_entry.place(x=240, y=60)
 
         self.password_label = Label(self, text="Password:", fg=self.fg, bg=self.bg, width = 20)
-        self.password_label.place(x=0, y=120)
+        self.password_label.place(x=20, y=100)
 
         self.password_entry=Entry(self, width=30, borderwidth=2)
-        self.password_entry.place(x=240, y=120)
+        self.password_entry.place(x=240, y=100)
 
         submit_button = Button(self, text='submit', width=15, borderwidth=5, height=2,bg=self.bg,fg=self.fg, cursor='hand2', border=2, command=self.submit)
-        submit_button.place(x=200, y=350)
+        submit_button.place(x=240, y=160)
 
         home_button = Button(self, text='return to home', width=15, border=2, height=2,cursor='hand2', command= lambda: self.root.raise_frame("HomePage"))
-        home_button.place(x=0, y=350)
+        home_button.place(x=20, y=160)
 
-        self.place(x=100,y=20,width=1000,height=900)
+        self.place(x=0,y=0,width=1000,height=900)
     
     def submit(self):
         db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
@@ -133,20 +148,20 @@ class LogInPage(Frame):
         cur.close()
         
         if rows and rows[0] and self.password_entry.get() == rows[0][0]:
-            self.root.raise_frame("LookUpPage")
+            self.root.raise_frame("UserHomePage")
         else:
             messagebox.showerror(message="wrong password. Please try again.")
             self.password_entry.delete(0, 'end')
-
-
 
 class RegistrationPage(Frame):
     def __init__(self, root, *args):
         Frame.__init__(self, root, *args)
         self.root = root
-
         self.fg = 'white'
         self.bg = self.root.bg_color
+
+        title1 = Label(self, text = "Fakebook", background = self.root.bg_color, foreground ="white")
+        title1.place(x=0,y=0,width=600,height=20)
 
         self.gender = StringVar(value="N/A")
         self.country = StringVar(value="N/A")
@@ -168,7 +183,7 @@ class RegistrationPage(Frame):
         self.place_checkboxes()
         self.place_buttons()
 
-        self.place(x=100,y=20,width=1000,height=900)
+        self.place(x=0,y=0,width=1000,height=900)
     
     def insert_data(self, firstname, lastname, email, gender, country, username, password):
         # Connect to MySQL server
@@ -308,7 +323,7 @@ class RegistrationPage(Frame):
 
     def place_title(self):
         title = Label(self, text = "Personal Registration Form", background = self.bg, foreground = self.fg)
-        title.place(x=0,y=20,width=425,height=50)
+        title.place(x=0,y=40,width=425,height=30)
 
     def database_initialize(self):
         db = pymysql.connect(host='localhost', user = 'root', password=  'password')
