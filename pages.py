@@ -11,32 +11,47 @@ class App(Tk):
         self.bg_color = '#3b5997'
 
         self.page_dictionary = {}
+        self.page_dictionary["UserHomePage"] = UserHomePage(self)
+        self.page_dictionary["LookUpPage"] = LookUpPage(self)
+        self.page_dictionary["RegistrationPage"] = RegistrationPage(self)
         self.page_dictionary["HomePage"] = HomePage(self)
-        self.page_dictionary["LookUp"] = LookUp(self)
-        self.page_dictionary["RegistrationForm"] = RegistrationForm(self)
+        self.page_dictionary["LogInPage"] = LogInPage(self)
 
         self.raise_frame("HomePage")
 
     def raise_frame(self, next_screen):
         new_screen = self.page_dictionary[next_screen]
         new_screen.tkraise()
-        
+
 class HomePage(Frame):
+    def __init__(self, root):
+        Frame.__init__(self, root)
+        self.root = root
+
+        button1 = Button(self, text = "Register", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("RegistrationPage"))
+        button1.place(x=300,y=150,width=200,height=25)
+
+        button2 = Button(self, text = "Log In", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("LogInPage"))
+        button2.place(x=300,y=175,width=200,height=25)
+
+        self.place(x=100,y=20,width=1000,height=900)
+
+class UserHomePage(Frame):
     def __init__(self, root):
         Frame.__init__(self, root)
         self.root = root
         title1 = Label(self, text = "User Registration Database", background = self.root.bg_color, foreground ="white")
         title1.place(x=0,y=100,width=200,height=100)
 
-        button1 = Button(self, text = "Register new user", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("RegistrationForm"))
+        button1 = Button(self, text = "Register new user", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("RegistrationPage"))
         button1.place(x=300,y=150,width=200,height=25)
 
-        button2 = Button(self, text = "Lookup users", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("LookUp"))
+        button2 = Button(self, text = "Lookup users", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("LookUpPage"))
         button2.place(x=300,y=175,width=200,height=25)
 
         self.place(x=100,y=20,width=1000,height=900)
 
-class LookUp(Frame):
+class LookUpPage(Frame):
     def __init__(self, root):
         Frame.__init__(self, root)
         self.root = root
@@ -61,7 +76,7 @@ class LookUp(Frame):
 
         self.query_results = Label(self, text = "")
         self.query_results.place(x=0, y=200)
-        
+
     def return_to_home(self):
         self.query_results.config(text = "")
         self.root.raise_frame("HomePage")
@@ -81,7 +96,51 @@ class LookUp(Frame):
 
         self.query_results.config(text = txt)
 
-class RegistrationForm(Frame):
+class LogInPage(Frame):
+    def __init__(self, root):
+        Frame.__init__(self, root)
+        self.root = root
+        self.fg = 'white'
+        self.bg = root.bg_color
+        username_label = Label(self, text="Username:", fg=self.fg, bg=self.bg, width = 20)
+        username_label.place(x=0, y=80)
+
+        self.username_entry=Entry(self, width=30, borderwidth=2)
+        self.username_entry.place(x=240, y=80)
+
+        self.password_label = Label(self, text="Password:", fg=self.fg, bg=self.bg, width = 20)
+        self.password_label.place(x=0, y=120)
+
+        self.password_entry=Entry(self, width=30, borderwidth=2)
+        self.password_entry.place(x=240, y=120)
+
+        submit_button = Button(self, text='submit', width=15, borderwidth=5, height=2,bg=self.bg,fg=self.fg, cursor='hand2', border=2, command=self.submit)
+        submit_button.place(x=200, y=350)
+
+        home_button = Button(self, text='return to home', width=15, border=2, height=2,cursor='hand2', command= lambda: self.root.raise_frame("HomePage"))
+        home_button.place(x=0, y=350)
+
+        self.place(x=100,y=20,width=1000,height=900)
+    
+    def submit(self):
+        db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
+        cur = db.cursor()
+        
+        # Find password for specified user
+        cur.execute("SELECT password FROM user_data WHERE username = %s", self.username_entry.get())
+        
+        rows = cur.fetchall()
+        cur.close()
+        
+        if rows and rows[0] and self.password_entry.get() == rows[0][0]:
+            self.root.raise_frame("LookUpPage")
+        else:
+            messagebox.showerror(message="wrong password. Please try again.")
+            self.password_entry.delete(0, 'end')
+
+
+
+class RegistrationPage(Frame):
     def __init__(self, root, *args):
         Frame.__init__(self, root, *args)
         self.root = root
