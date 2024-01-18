@@ -15,7 +15,7 @@ class App(Tk):
         self.page_dictionary = {}
         self.page_dictionary["UserHomePage"] = (UserHomePage(self), '550x300+0+0')
         self.page_dictionary["LookUpPage"] = (LookUpPage(self), '550x300+0+0')
-        self.page_dictionary["RegistrationPage"] = (RegistrationPage(self), '550x400+0+0')
+        self.page_dictionary["RegistrationPage"] = (RegistrationPage(self), '550x500+0+0')
         self.page_dictionary["HomePage"] = (HomePage(self), '550x300+0+0')
         self.page_dictionary["LogInPage"] = (LogInPage(self), '550x300+0+0')
 
@@ -31,6 +31,11 @@ class HomePage(Frame):
         Frame.__init__(self, root)
         self.root = root
 
+        title = Label(self, text = "FakeBook", font = self.root.big_font, background = self.root.bg_color, foreground = "white")
+        title.place(x= 300, y = 50, width = 200, height = 100)
+
+        #header = Label(self, text = "Fakebook", background = self.root.bg_color, foreground = "white")
+
         button1 = Button(self, text = "Register", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("RegistrationPage"))
         button1.place(x=300,y=160,width=200,height=25)
 
@@ -44,7 +49,7 @@ class HomePage(Frame):
         logo_label.image = logo_img
         logo_label.place(x=20, y=20)
 
-        self.place(x=0,y=0,width=500,height=500)
+        self.place(x=0,y=0,width=550,height=500)
 
 class UserHomePage(Frame):
     def __init__(self, root):
