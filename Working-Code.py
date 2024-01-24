@@ -127,19 +127,26 @@ def submit():
             )
         ''')
         
-        # Insert data into the table
-        cur.execute("INSERT INTO user_data (firstname, lastname, email, gender, country, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                        (firstnameEntry.get(), lastnameEntry.get(), emailEntry.get(), gender, country, usernameEntry.get(), passwordEntry.get()))
+        current_username = usernameEntry.get()
+        cur.execute("SELECT username FROM user_data WHERE username = %s", current_username)
+        
+        if cur.fetchone() is not None:
+            messagebox.showerror(message = "Username already exists")
+        else:
+            # Insert data into the table
+            cur.execute("INSERT INTO user_data (firstname, lastname, email, gender, country, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                            (firstnameEntry.get(), lastnameEntry.get(), emailEntry.get(), gender, country, usernameEntry.get(), passwordEntry.get()))
 
-        cur.execute("select password from user_data where username = 'bluebear';")
-        rows = cur.fetchall()
-        print(rows)
-        for i in rows:
-            print(i)
-        db.commit()
+            cur.execute("select password from user_data where username = 'bluebear';")
+            rows = cur.fetchall()
+            print(rows)
+            for i in rows:
+                print(i)
+            db.commit()
+            cur.close()
+
+            messagebox.showinfo(message = "Success! Submitted!")
         cur.close()
-
-        messagebox.showinfo(message = "Success! Submitted!")
 
 def reset():
     firstnameEntry.delete(first = 0, last = len(firstnameEntry.get())) 
