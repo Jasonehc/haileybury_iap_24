@@ -3,6 +3,8 @@ from tkinter import messagebox, font
 from PIL import ImageTk, Image
 import pymysql
 
+pw = 'breadeunice'
+
 class App(Tk):
     def __init__(self):
         Tk.__init__(self)
@@ -37,7 +39,7 @@ class HomePage(Frame):
         #header = Label(self, text = "Fakebook", background = self.root.bg_color, foreground = "white")
 
         button1 = Button(self, text = "Register", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("RegistrationPage"))
-        button1.place(x=300,y=160,width=200,height=25)
+        button1.place(x=300,y=150,width=200,height=25)
 
         button2 = Button(self, text = "Log In", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("LogInPage"))
         button2.place(x=300,y=185,width=200,height=25)
@@ -65,7 +67,7 @@ class UserHomePage(Frame):
         button2 = Button(self, text = "Lookup users", background = self.root.bg_color, foreground ="white", command = lambda: root.raise_frame("LookUpPage"))
         button2.place(x=300,y=175,width=200,height=25)
 
-        self.place(x=0,y=0,width=1000,height=900)
+        self.place(x=100,y=20,width=1000,height=900)
 
 class LookUpPage(Frame):
     def __init__(self, root):
@@ -98,7 +100,7 @@ class LookUpPage(Frame):
         self.root.raise_frame("UserHomePage")
 
     def run_query(self):
-        db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
+        db = pymysql.connect(host='localhost', user='root', password=pw, database='Personal_registration_form')
         cur = db.cursor()
         query = self.query_entry.get()
         cur.execute(query)
@@ -132,7 +134,7 @@ class LogInPage(Frame):
         self.password_label.place(x=20, y=100)
 
         self.password_entry=Entry(self, width=30, borderwidth=2)
-        self.password_entry.place(x=240, y=100)
+        self.password_entry.place(x=240, y=120)
 
         submit_button = Button(self, text='submit', width=15, borderwidth=5, height=2,bg=self.bg,fg=self.fg, cursor='hand2', border=2, command=self.submit)
         submit_button.place(x=240, y=160)
@@ -140,10 +142,10 @@ class LogInPage(Frame):
         home_button = Button(self, text='return to home', width=15, border=2, height=2,cursor='hand2', command= lambda: self.root.raise_frame("HomePage"))
         home_button.place(x=20, y=160)
 
-        self.place(x=0,y=0,width=1000,height=900)
+        self.place(x=100,y=20,width=1000,height=900)
     
     def submit(self):
-        db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
+        db = pymysql.connect(host='localhost', user='root', password=pw, database='Personal_registration_form')
         cur = db.cursor()
         
         # Find password for specified user
@@ -192,7 +194,7 @@ class RegistrationPage(Frame):
     
     def insert_data(self, firstname, lastname, email, gender, country, username, password):
         # Connect to MySQL server
-        db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
+        db = pymysql.connect(host='localhost', user='root', password=pw, database='Personal_registration_form')
         cur = db.cursor()
         
         # Insert data into the table
@@ -204,8 +206,24 @@ class RegistrationPage(Frame):
         messagebox.showinfo('Success', 'Registration successful!')
         cur.close()
 
+    def check_username(self, username): 
+        # Connect to MYSQL server   
+        db = pymysql.connect(host='localhost', user='root', password=pw, database='Personal_registration_form')
+        cur = db.cursor()
+
+        # Check if the username already exists
+        cur.execute("SELECT id from user_data WHERE username = %s", username)
+        existing_user = cur.fetchone()
+
+        cur.close()
+        db.close()
+
+        return existing_user is not None
+
     def submit(self):
-        if self.firstnameEntry.get()=='':
+        if self.check_username(self.usernameEntry.get()):
+            messagebox.showerror("Alert!", "Username already exists. Enter a different username.")
+        elif self.firstnameEntry.get()=='':
             messagebox.showerror('Alert!', 'Please enter your first name')
         elif self.lastnameEntry.get()=='':
             messagebox.showerror('Alert!', 'Please enter your last name')
@@ -331,7 +349,7 @@ class RegistrationPage(Frame):
         title.place(x=0,y=40,width=425,height=30)
 
     def database_initialize(self):
-        db = pymysql.connect(host='localhost', user = 'root', password=  'password')
+        db = pymysql.connect(host='localhost', user = 'root', password=pw)
         cur = db.cursor()
         cur.execute('CREATE DATABASE IF NOT EXISTS Personal_registration_form')
         cur.execute('USE Personal_registration_form')

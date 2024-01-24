@@ -186,6 +186,34 @@ def go_back():
 bckbtn = Button(frame, text='<<', width=15, border=2, height=2,cursor='hand2', command=go_back)     
 bckbtn.place(x=0, y=550)
 
+def view_data():
+    try:
+        # Execute SELECT query to retrieve all data from the user_data table
+        cur.execute("SELECT id, firstname, lastname, email, gender, country, username FROM user_data")
+
+        # Fetch all rows
+        rows = cur.fetchall()
+
+        # Display the data
+        data_text = ""
+        for row in rows:
+            data_text += f"ID: {row[0]}, Name: {row[1]} {row[2]}, Email: {row[3]}, Gender: {row[4]}, Country: {row[5]}, Username: {row[6]}\n"
+
+        # Create a new window to display the data
+        view_window = Toplevel(windows)
+        view_window.title('View User Data')
+        view_window.geometry('600x400')
+
+        data_label = Label(view_window, text=data_text, font=('Calibre', 12))
+        data_label.pack(pady=20)
+
+    except pymysql.Error as e:
+        messagebox.showerror('Database Error', f'Error fetching data from the database: {str(e)}')
+
+# Create a button to trigger the view_data function
+view_data_btn = Button(frame, text='View User Data', width=15, border=2, height=2, cursor='hand2', command=view_data)
+view_data_btn.place(x=150, y=550)
+
 windows.mainloop()
 
 
