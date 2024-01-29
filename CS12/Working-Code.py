@@ -4,7 +4,7 @@ from tkinter import messagebox
 import pymysql
 
 # (2) Set colors
-text_color = '#0d4763'
+text_color = '#0d4763'  
 background_color = '#bed8e6'
 
 # (3) Create window
@@ -129,9 +129,8 @@ def submit():
         
         current_username = usernameEntry.get()
         cur.execute("SELECT username FROM user_data WHERE username = %s", current_username)
-        
         if cur.fetchone() is not None:
-            messagebox.showerror(message = "Username already exists")
+            messagebox.showerror(message = "Username already exists")   
         else:
             # Insert data into the table
             cur.execute("INSERT INTO user_data (firstname, lastname, email, gender, country, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s)",
@@ -147,6 +146,7 @@ def submit():
 
             messagebox.showinfo(message = "Success! Submitted!")
         cur.close()
+        db.close()
 
 def reset():
     firstnameEntry.delete(first = 0, last = len(firstnameEntry.get())) 
@@ -160,8 +160,6 @@ submit_button.place(x=300,  y = 500)
 
 reset_button = Button(master = frame, text = "Reset", command = reset) 
 reset_button.place(x=200,  y = 500)
+
 # Run application
-
-        # Connect to MySQL serve
-
 windows.mainloop()
