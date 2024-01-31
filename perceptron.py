@@ -7,26 +7,22 @@ class Perceptron(object):
     def __init__(self, learning_rate, n_iter):
         self.learning_rate = learning_rate
         self.n_iter = n_iter
-        self.weights = np.array([0.0, 0.0, 0.0])
+        self.weights = np.array([.5, 0.0, 0.0])
         self.end_weights = []
 
     def fit(self, X, y):
-        self.errors_ = []
-
-        for _ in range(self.n_iter):
-            errors = 0
+        print("Weights:", self.weights)
+        for i in range(self.n_iter):
             for xi, target in zip(X, y):
-                print(xi, target)
                 predict = self.predict(xi)
                 if predict != target:
-                    update = self.learning_rate * (target - self.predict(xi))
+                    update = self.learning_rate * 1/2 *(target - self.predict(xi))
                     
                     self.weights[1:] += update * xi
-                    
                     self.weights[0] += update
-                    errors += int(update != 0.0)
+                    print("Updated Weights:", self.weights)
                     self.end_weights.append((self.weights[0], self.weights[1], self.weights[2]))
-            self.errors_.append(errors)
+
         return self
 
     def predict(self, X):
@@ -34,7 +30,7 @@ class Perceptron(object):
         if np.dot(X, self.weights[1:]) + self.weights[0] > 0.0:
             return 1
         else:
-            return 0
+            return -1
 
 # Obtain data
 iris = load_iris()
@@ -55,7 +51,7 @@ y = np.where(y == 'setosa', -1, 1)
 X = df.iloc[0:100, [0, 2]].values
 
 #Training
-ppn = Perceptron(learning_rate=0.01, n_iter=10)
+ppn = Perceptron(learning_rate=0.001, n_iter=50)
 
 ppn.fit(X, y)
 
@@ -73,13 +69,14 @@ def visualize(points, line_weights):
         plt.scatter(points[50:100, 0], points[50:100, 1], color='blue')
         
         slope = -weight1/weight2
-        intercept = weight0
+        intercept = -weight0/weight2
         print("line is y = " + str(slope) + "x+" + str(intercept))
         x_vals = np.linspace(0,10, 100)
         y_vals = [slope*i+intercept for i in x_vals]
         plt.plot(x_vals, y_vals)
         plt.pause(.1)
-    plt.pause(1)
+    plt.pause(2)
+    plt.show()
 
 print(ppn.weights)
 print(len(ppn.end_weights))
