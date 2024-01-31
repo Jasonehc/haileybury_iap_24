@@ -24,9 +24,13 @@ class Perceptron(object):
             #self.plot_decision_line(x, y)
         return self
     
+    # Net Input method for summing the given matrix inputs and their corresponding weights.
+    def net_input(self, x):
+        return np.dot(x, self.weights[1:]) + self.weights[0]
+
     # Predict method for predicting the classification of data inputs.
     def predict(self, x):
-        return np.where(np.dot(x, self.weights[1:]) + self.weights[0](x) >= 0.0, 1, -1)
+        return np.where(self.net_input(x) >= 0.0, 1, -1)
     
     def plot_decision_line(self, x, y):
         # setup marker generator and color map
