@@ -7,7 +7,7 @@ class Perceptron(object):
     def __init__(self, learning_rate, n_iter):
         self.learning_rate = learning_rate
         self.n_iter = n_iter
-        self.weights = np.array([.5, 0.0, 0.0])
+        self.weights = np.array([1.0, 0.0, 0.0])
         self.end_weights = []
 
     def fit(self, X, y):
@@ -75,7 +75,6 @@ def visualize(points, line_weights):
         y_vals = [slope*i+intercept for i in x_vals]
         plt.plot(x_vals, y_vals)
         plt.pause(.1)
-    plt.pause(2)
     plt.show()
 
 print(ppn.weights)
