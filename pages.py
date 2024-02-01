@@ -98,6 +98,7 @@ class LookUpPage(Frame):
         self.root.raise_frame("UserHomePage")
 
     def run_query(self):
+        # make sure to change these parameters if needed
         db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
         cur = db.cursor()
         query = self.query_entry.get()
@@ -143,6 +144,7 @@ class LogInPage(Frame):
         self.place(x=0,y=0,width=1000,height=900)
     
     def submit(self):
+        # make sure to change these parameters if needed
         db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
         cur = db.cursor()
         
@@ -192,6 +194,7 @@ class RegistrationPage(Frame):
     
     def insert_data(self, firstname, lastname, email, gender, country, username, password):
         # Connect to MySQL server
+        # make sure to change these parameters if needed
         db = pymysql.connect(host='localhost', user='root', password='password', database='Personal_registration_form')
         cur = db.cursor()
         
