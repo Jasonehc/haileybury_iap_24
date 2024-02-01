@@ -1,4 +1,3 @@
-#Done by Mr.Noureddine Tadjerout 
 from pages import *
 
 if __name__ == "__main__":
